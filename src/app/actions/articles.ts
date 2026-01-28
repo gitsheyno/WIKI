@@ -6,6 +6,7 @@ import { articles } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import db from "@/db/index";
 import { ensureUserExists } from "@/db/utilities";
+import { authorizeUserToEditArticle } from "@/db/authZ";
 
 export type CreateArticleInput = {
   title: string;
@@ -25,6 +26,7 @@ export async function createArticle(data: CreateArticleInput) {
   if (!user) {
     throw new Error("❌ Unauthorized");
   }
+
   await ensureUserExists(user);
   const response = await db.insert(articles).values({
     title: data.title,
@@ -41,6 +43,12 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
   const user = await stackServerApp.getUser();
   if (!user) {
     throw new Error("❌ Unauthorized");
+  }
+
+  if (!(await authorizeUserToEditArticle(user.id, +id))) {
+    throw new Error(
+      "❌ Forbidden: You do not have permission to edit this article.",
+    );
   }
   await ensureUserExists(user);
 

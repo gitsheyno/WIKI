@@ -101,7 +101,7 @@ export default function WikiEditor({
     alert(
       `Article ${
         isEditing ? "updated" : "created"
-      } successfully! Check console for form data.`
+      } successfully! Check console for form data.`,
     );
   };
 
@@ -109,7 +109,7 @@ export default function WikiEditor({
   const handleCancel = () => {
     // In a real app, you would navigate back
     const shouldLeave = window.confirm(
-      "Are you sure you want to cancel? Any unsaved changes will be lost."
+      "Are you sure you want to cancel? Any unsaved changes will be lost.",
     );
     if (shouldLeave) {
       console.log("User cancelled editing");
