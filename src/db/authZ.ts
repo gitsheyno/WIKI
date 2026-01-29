@@ -4,7 +4,7 @@ import { articles } from "./schema";
 
 export const authorizeUserToEditArticle = async function authorizeArticle(
   loggedInUserId: string,
-  articleId: number,
+  articleId: number
 ): Promise<boolean> {
   const response = await db
     .select({ authorId: articles.authorId })
@@ -14,6 +14,5 @@ export const authorizeUserToEditArticle = async function authorizeArticle(
   if (!response.length) {
     return false;
   }
-
   return response[0].authorId === loggedInUserId;
 };

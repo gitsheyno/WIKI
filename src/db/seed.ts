@@ -23,8 +23,8 @@ async function main() {
     if (users.length === 0) {
       console.log("👤 No users found, inserting default seed user...");
       await db.insert(usersSync).values({
-        id: "seed-user-001",
-        name: "Seed User",
+        id: "636901df-7586-4b01-bf33-e9f61b80abe3",
+        name: "Shayan",
         email: "seed@example.com",
       });
       users = [{ id: "seed-user-001" }];
@@ -78,7 +78,7 @@ async function main() {
     // the sequence behind the table's max value.
     try {
       await sql.query(
-        `SELECT setval(pg_get_serial_sequence('articles','id'), COALESCE((SELECT MAX(id) FROM articles), 1), true);`,
+        `SELECT setval(pg_get_serial_sequence('articles','id'), COALESCE((SELECT MAX(id) FROM articles), 1), true);`
       );
       console.log("✅ Sequence synced after seeding");
     } catch (err) {

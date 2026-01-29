@@ -27,7 +27,7 @@ export async function createArticle(data: CreateArticleInput) {
     throw new Error("❌ Unauthorized");
   }
 
-  await ensureUserExists(user);
+  // await ensureUserExists(user);
   const response = await db.insert(articles).values({
     title: data.title,
     content: data.content,
@@ -47,9 +47,10 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
 
   if (!(await authorizeUserToEditArticle(user.id, +id))) {
     throw new Error(
-      "❌ Forbidden: You do not have permission to edit this article.",
+      "❌ Forbidden: You do not have permission to edit this article."
     );
   }
+
   await ensureUserExists(user);
 
   const response = await db
