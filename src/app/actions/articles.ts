@@ -27,13 +27,13 @@ export async function createArticle(data: CreateArticleInput) {
     throw new Error("❌ Unauthorized");
   }
 
-  // await ensureUserExists(user);
   const response = await db.insert(articles).values({
     title: data.title,
     content: data.content,
     slug: "" + Date.now(),
     published: true,
     authorId: user.id,
+    imageUrl: data.imageUrl ?? undefined,
   });
 
   return { success: true, message: "Article create logged (stub)" };
@@ -58,6 +58,7 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
     .set({
       title: data.title,
       content: data.content,
+      imageUrl: data.imageUrl ?? undefined,
     })
     .where(eq(articles.id, +id));
   console.log("📝 updateArticle called:", { id, ...data });

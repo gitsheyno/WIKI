@@ -2,6 +2,8 @@
 
 // Server action to handle uploads (stub)
 // TODO: Replace placeholder logic with real Cloudinary (or other) upload
+import { put } from "@vercel/blob";
+
 import { stackServerApp } from "@/stack/server";
 
 export type UploadedFile = {
@@ -25,7 +27,7 @@ export async function uploadFile(formData: FormData): Promise<UploadedFile> {
 
   console.log(
     "📤 uploadFile called, received files:",
-    files.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+    files.map((f) => ({ name: f.name, size: f.size, type: f.type }))
   );
 
   if (!file) {
@@ -40,14 +42,20 @@ export async function uploadFile(formData: FormData): Promise<UploadedFile> {
     throw new Error("File too large");
   }
 
-  // TODO: Insert Cloudinary upload code here.
-  // Example: upload using Cloudinary SDK on the server and return secure_url
+  try {
+    const blob = await put(file.name, file, {
+      access: "public",
+      addRandomSuffix: true,
+    });
 
-  // Return mock file info for now
-  return {
-    url: "/uploads/mock-image.jpg",
-    size: file.size,
-    type: file.type,
-    filename: file.name,
-  };
+    return {
+      url: blob.url ?? "",
+      size: file.size,
+      type: file.type,
+      filename: blob.pathname ?? file.name,
+    };
+  } catch (err) {
+    console.log("Error uploading to Vercel Blob:", err);
+    throw new Error("Upload failed");
+  }
 }
