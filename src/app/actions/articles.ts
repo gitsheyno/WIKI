@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import db from "@/db/index";
 import { ensureUserExists } from "@/db/utilities";
 import { authorizeUserToEditArticle } from "@/db/authZ";
+import redis from "@/cache";
 
 export type CreateArticleInput = {
   title: string;
@@ -35,6 +36,8 @@ export async function createArticle(data: CreateArticleInput) {
     authorId: user.id,
     imageUrl: data.imageUrl ?? undefined,
   });
+
+  redis.del("articles:all");
 
   return { success: true, message: "Article create logged (stub)" };
 }
