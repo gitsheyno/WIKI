@@ -2,13 +2,13 @@
 
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { summarizeArticle } from "@/ai/summarize";
 import redis from "@/cache";
 import { authorizeUserToEditArticle } from "@/db/authZ";
 import db from "@/db/index";
 import { articles } from "@/db/schema";
 import { ensureUserExists } from "@/db/utilities";
 import { stackServerApp } from "@/stack/server";
-import { summarizeArticle } from "@/ai/summarize";
 export type CreateArticleInput = {
   title: string;
   content: string;
@@ -61,7 +61,7 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
 
   if (!(await authorizeUserToEditArticle(user.id, +id))) {
     throw new Error(
-      "❌ Forbidden: You do not have permission to edit this article."
+      "❌ Forbidden: You do not have permission to edit this article.",
     );
   }
 

@@ -10,7 +10,7 @@ const BASE_URL = process.env.VERCEL_URL
 
 export default async function sendCelebrationEmail(
   articleId: number,
-  pageViews: number
+  pageViews: number,
 ) {
   const response = await db
     .select({
@@ -27,7 +27,7 @@ export default async function sendCelebrationEmail(
 
   if (!email) {
     console.log(
-      `No email found for user with id ${articleId} on pageviews ${pageViews}`
+      `No email found for user with id ${articleId} on pageviews ${pageViews}`,
     );
     return;
   }
@@ -56,11 +56,11 @@ export default async function sendCelebrationEmail(
 
   if (emailRes.error) {
     console.log(
-      `Error sending email to user with id ${id} on pageviews ${pageViews}: ${emailRes.error.message}`
+      `Error sending email to user with id ${id} on pageviews ${pageViews}: ${emailRes.error.message}`,
     );
   } else {
     console.log(
-      `Celebration email sent to user with id ${id} on pageviews ${pageViews}`
+      `Celebration email sent to user with id ${id} on pageviews ${pageViews}`,
     );
   }
 }

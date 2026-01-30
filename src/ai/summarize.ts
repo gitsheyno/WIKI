@@ -3,7 +3,7 @@ import { generateText } from "ai";
 
 export async function summarizeArticle(
   title: string,
-  article: string
+  article: string,
 ): Promise<string> {
   if (!article || !article.trim()) {
     throw new Error("Article content is required to generate a summary.");
