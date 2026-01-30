@@ -27,7 +27,7 @@ export async function uploadFile(formData: FormData): Promise<UploadedFile> {
 
   console.log(
     "📤 uploadFile called, received files:",
-    files.map((f) => ({ name: f.name, size: f.size, type: f.type }))
+    files.map((f) => ({ name: f.name, size: f.size, type: f.type })),
   );
 
   if (!file) {

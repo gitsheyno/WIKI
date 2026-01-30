@@ -1,7 +1,8 @@
+import { notFound } from "next/navigation";
 import WikiEditor from "@/components//wiki/wiki-editor";
 import { getArticleById } from "@/lib/data/articles";
 import { stackServerApp } from "@/stack/server";
-import { notFound } from "next/navigation";
+
 interface EditArticlePageProps {
   params: Promise<{
     id: string;

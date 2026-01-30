@@ -1,13 +1,13 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { stackServerApp } from "@/stack/server";
-import { articles } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import db from "@/db/index";
-import { ensureUserExists } from "@/db/utilities";
-import { authorizeUserToEditArticle } from "@/db/authZ";
+import { redirect } from "next/navigation";
 import redis from "@/cache";
+import { authorizeUserToEditArticle } from "@/db/authZ";
+import db from "@/db/index";
+import { articles } from "@/db/schema";
+import { ensureUserExists } from "@/db/utilities";
+import { stackServerApp } from "@/stack/server";
 
 export type CreateArticleInput = {
   title: string;
@@ -50,7 +50,7 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
 
   if (!(await authorizeUserToEditArticle(user.id, +id))) {
     throw new Error(
-      "❌ Forbidden: You do not have permission to edit this article."
+      "❌ Forbidden: You do not have permission to edit this article.",
     );
   }
 

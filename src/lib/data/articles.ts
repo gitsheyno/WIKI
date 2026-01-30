@@ -1,9 +1,9 @@
 // replace everything but the getArticlesById function - we'll do that in a sec
-import db from "@/db/index";
-import { articles } from "@/db/schema";
+
 import { eq } from "drizzle-orm";
-import { usersSync } from "@/db/schema";
 import redis from "@/cache";
+import db from "@/db/index";
+import { articles, usersSync } from "@/db/schema";
 
 export async function getArticles() {
   const cached = await redis.get("articles:all");

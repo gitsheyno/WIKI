@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackClientApp } from "../stack/client";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { stackClientApp } from "../stack/client";
 import "./globals.css";
 import { NavBar } from "@/components/nav/nav-bar";
 
