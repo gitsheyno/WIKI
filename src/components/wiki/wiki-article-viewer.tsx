@@ -53,11 +53,12 @@ export default function WikiArticleViewer({
   useEffect(() => {
     async function fetchPageView() {
       const newCount = await incremenetPageView(article.id);
+      console.log("Fetched page views:", newCount);
       setLocalPageViews(newCount ?? null);
     }
 
     fetchPageView();
-  }, []);
+  }, [article.id]);
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Breadcrumb Navigation */}

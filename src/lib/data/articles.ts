@@ -5,8 +5,18 @@ import redis from "@/cache";
 import db from "@/db/index";
 import { articles, usersSync } from "@/db/schema";
 
-export async function getArticles() {
-  const cached = await redis.get("articles:all");
+export type ArticleList = {
+  id: number;
+  title: string;
+  createdAt: string;
+  content: string;
+  author: string | null;
+  imageUrl: string | null;
+  summary: string | null;
+};
+
+export async function getArticles(): Promise<ArticleList[]> {
+  const cached = (await redis.get("articles:all")) as ArticleList[];
 
   if (cached) {
     console.log("Get articles Cached Hit");
@@ -22,6 +32,7 @@ export async function getArticles() {
       createdAt: articles.createdAt,
       content: articles.content,
       author: usersSync.name,
+      summary: articles.summary,
     })
     .from(articles)
     .leftJoin(usersSync, eq(articles.authorId, usersSync.id));
@@ -29,7 +40,7 @@ export async function getArticles() {
   await redis.set("articles:all", response, {
     ex: 60,
   });
-  return response;
+  return response as ArticleList[];
 }
 
 export async function getArticleById(id: number) {

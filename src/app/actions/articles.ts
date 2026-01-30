@@ -8,7 +8,7 @@ import db from "@/db/index";
 import { articles } from "@/db/schema";
 import { ensureUserExists } from "@/db/utilities";
 import { stackServerApp } from "@/stack/server";
-
+import { summarizeArticle } from "@/ai/summarize";
 export type CreateArticleInput = {
   title: string;
   content: string;
@@ -28,18 +28,29 @@ export async function createArticle(data: CreateArticleInput) {
     throw new Error("❌ Unauthorized");
   }
 
-  const response = await db.insert(articles).values({
-    title: data.title,
-    content: data.content,
-    slug: "" + Date.now(),
-    published: true,
-    authorId: user.id,
-    imageUrl: data.imageUrl ?? undefined,
-  });
+  const summary = await summarizeArticle(data.title || "", data.content || "");
+
+  const response = await db
+    .insert(articles)
+    .values({
+      title: data.title,
+      content: data.content,
+      slug: "" + Date.now(),
+      published: true,
+      authorId: user.id,
+      imageUrl: data.imageUrl ?? undefined,
+      summary,
+    })
+    .returning({ id: articles.id });
 
   redis.del("articles:all");
+  const articleId = response[0]?.id;
 
-  return { success: true, message: "Article create logged (stub)" };
+  return {
+    success: true,
+    message: "Article create logged (stub)",
+    id: articleId,
+  };
 }
 
 export async function updateArticle(id: string, data: UpdateArticleInput) {
@@ -50,18 +61,20 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
 
   if (!(await authorizeUserToEditArticle(user.id, +id))) {
     throw new Error(
-      "❌ Forbidden: You do not have permission to edit this article.",
+      "❌ Forbidden: You do not have permission to edit this article."
     );
   }
 
   await ensureUserExists(user);
+  const summary = await summarizeArticle(data.title || "", data.content || "");
 
-  const response = await db
+  const _response = await db
     .update(articles)
     .set({
       title: data.title,
       content: data.content,
       imageUrl: data.imageUrl ?? undefined,
+      summary: summary ? summary : undefined,
     })
     .where(eq(articles.id, +id));
   console.log("📝 updateArticle called:", { id, ...data });

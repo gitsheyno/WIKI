@@ -9,9 +9,9 @@ const keyFor = (id: number) => `pageviews:article:${id}`;
 export async function incremenetPageView(articleId: number) {
   const articleKey = keyFor(articleId);
   const newVal = await redis.incr(articleKey);
-
+  console.log(newVal, "new");
   if (milestones.includes(newVal)) {
-    void sendCelebrationEmail(articleId, newVal);
+    // void sendCelebrationEmail(articleId, newVal);
   }
   return newVal;
 }
