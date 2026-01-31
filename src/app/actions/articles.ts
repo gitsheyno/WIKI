@@ -61,7 +61,7 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
 
   if (!(await authorizeUserToEditArticle(user.id, +id))) {
     throw new Error(
-      "❌ Forbidden: You do not have permission to edit this article.",
+      "❌ Forbidden: You do not have permission to edit this article."
     );
   }
 
@@ -86,9 +86,15 @@ export async function deleteArticle(id: string) {
   if (!user) {
     throw new Error("❌ Unauthorized");
   }
-  await ensureUserExists(user);
+
+  if (!(await authorizeUserToEditArticle(user.id, +id))) {
+    throw new Error(
+      "❌ Forbidden: You do not have permission to edit this article."
+    );
+  }
 
   console.log("🗑️ deleteArticle called:", id);
+  const _response = await db.delete(articles).where(eq(articles.id, +id));
   return { success: true, message: `Article ${id} delete logged (stub)` };
 }
 

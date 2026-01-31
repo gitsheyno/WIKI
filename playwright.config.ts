@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables from .env.test
-dotenv.config({ quiet: true, path: path.join(__dirname, ".env.test") });
+dotenv.config({ quiet: true, path: path.join(__dirname, ".env") });
 // Load .env.test.local if it exists (created by global setup)
 dotenv.config({ quiet: true, path: path.join(__dirname, ".env.test.local") });
 
@@ -18,8 +18,8 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: 1,
   reporter: process.env.CI ? "github" : "html",
-  globalSetup: path.join(__dirname, "./test/e2e/global-setup.ts"),
-  globalTeardown: path.join(__dirname, "./test/e2e/global-teardown.ts"),
+  globalSetup: path.join(__dirname, "./src/test/e2e/global-setup.ts"),
+  globalTeardown: path.join(__dirname, "./src/test/e2e/global-teardown.ts"),
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",

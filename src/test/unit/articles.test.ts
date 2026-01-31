@@ -7,7 +7,7 @@ import {
   updateArticle,
 } from "@/app/actions/articles";
 import redis from "@/cache";
-import * as authz from "@/db/authz";
+import * as authz from "@/db/authZ";
 import db from "@/db/index";
 import { articles } from "@/db/schema";
 import { stackServerApp } from "@/stack/server";
@@ -52,10 +52,15 @@ describe("Article Actions", () => {
 
   describe("createArticle", () => {
     it("should create an article when user is authenticated", async () => {
+      // Mock the full chain for ensureUserExists
+      const mockOnConflictDoUpdate = vi.fn().mockResolvedValue(undefined);
+      const mockValues = vi.fn().mockReturnValue({
+        onConflictDoUpdate: mockOnConflictDoUpdate,
+        returning: vi.fn().mockResolvedValue([{ id: 1 }]),
+      });
+
       vi.mocked(db.insert).mockReturnValue({
-        values: vi.fn().mockReturnValue({
-          returning: vi.fn().mockResolvedValue([{ id: 1 }]),
-        }),
+        values: mockValues,
       } as unknown as ReturnType<typeof db.insert>);
 
       const articleData = {
@@ -69,7 +74,7 @@ describe("Article Actions", () => {
 
       expect(result).toEqual({
         success: true,
-        message: "Article create logged",
+        message: "Article create logged (stub)",
         id: 1,
       });
       expect(db.insert).toHaveBeenCalledWith(articles);
@@ -90,10 +95,15 @@ describe("Article Actions", () => {
     });
 
     it("should handle article creation without optional imageUrl", async () => {
+      // Mock the full chain for ensureUserExists
+      const mockOnConflictDoUpdate = vi.fn().mockResolvedValue(undefined);
+      const mockValues = vi.fn().mockReturnValue({
+        onConflictDoUpdate: mockOnConflictDoUpdate,
+        returning: vi.fn().mockResolvedValue([{ id: 1 }]),
+      });
+
       vi.mocked(db.insert).mockReturnValue({
-        values: vi.fn().mockReturnValue({
-          returning: vi.fn().mockResolvedValue([{ id: 1 }]),
-        }),
+        values: mockValues,
       } as unknown as ReturnType<typeof db.insert>);
 
       const articleData = {
@@ -106,7 +116,7 @@ describe("Article Actions", () => {
 
       expect(result).toEqual({
         success: true,
-        message: "Article create logged",
+        message: "Article create logged (stub)",
         id: 1,
       });
       expect(db.insert).toHaveBeenCalledWith(articles);
@@ -140,11 +150,11 @@ describe("Article Actions", () => {
 
       expect(result).toEqual({
         success: true,
-        message: "Article 1 update logged",
+        message: "Article 1 update logged (stub)",
       });
       expect(authz.authorizeUserToEditArticle).toHaveBeenCalledWith(
         mockUser.id,
-        1,
+        1
       );
       expect(db.update).toHaveBeenCalledWith(articles);
     });
@@ -153,7 +163,7 @@ describe("Article Actions", () => {
       vi.mocked(stackServerApp.getUser).mockResolvedValue(null);
 
       await expect(updateArticle("1", { title: "New Title" })).rejects.toThrow(
-        "Unauthorized",
+        "Unauthorized"
       );
       expect(db.update).not.toHaveBeenCalled();
     });
@@ -162,7 +172,7 @@ describe("Article Actions", () => {
       vi.mocked(authz.authorizeUserToEditArticle).mockResolvedValue(false);
 
       await expect(updateArticle("1", { title: "New Title" })).rejects.toThrow(
-        "Forbidden",
+        "Forbidden"
       );
       expect(db.update).not.toHaveBeenCalled();
     });
@@ -183,13 +193,15 @@ describe("Article Actions", () => {
 
       const result = await deleteArticle("1");
 
+      console.log("res", result);
+
       expect(result).toEqual({
         success: true,
         message: "Article 1 delete logged (stub)",
       });
       expect(authz.authorizeUserToEditArticle).toHaveBeenCalledWith(
         mockUser.id,
-        1,
+        1
       );
       expect(db.delete).toHaveBeenCalledWith(articles);
     });
